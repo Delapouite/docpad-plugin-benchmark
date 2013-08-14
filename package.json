@@ -28,5 +28,5 @@
         "coffee-script": "~1.6.2",
         "docpad": ">=6.46 <7"
     },
-    "main": "./out/benchmark.plugin.js",
+    "main": "./out/benchmark.plugin.js"
 }
