@@ -14,33 +14,40 @@ module.exports = (BasePlugin) ->
 					time: Date.now()
 			}
 
-			# events couples to listen to
+			# events after/before couples to listen to
 			deltas = [
-				['generateBefore', 'generateAfter']
-				['parseBefore', 'parseAfter']
-				['populateCollectionsBefore', 'populateCollections']
-				['contextualizeBefore', 'contextualizeAfter']
-				['renderBefore', 'renderAfter']
-				['writeBefore', 'writeAfter']
-				['serverBefore', 'serverAfter']
+				'generate'
+				'parse'
+				'populateCollections'
+				'contextualize'
+				'render'
+				'renderCollection'
+				'write'
+				'server'
 			]
 
 			# register the events above
 			deltas.forEach (delta) =>
-				before = delta[0]
-				after = delta[1]
-				# start timer
+				before = delta + 'Before'
+				after = delta + 'After'
+
+				# start timer and log
 				@[before] = (opts) ->
-					console.log before + '...'
-					steps[after] = time: Date.now()
+					stepName = delta + (opts.renderPass or '')
+					steps[stepName] = time: Date.now()
 					if opts.collection?.length
-						steps[after].files = opts.collection.length
-				# end timer
-				@[after] = ->
-					steps[after].time = Date.now() - steps[after].time
-					console.log '\n' + after + ' in ' + steps[after].time + 'ms (' + (Date.now() - steps.general.time) + 'ms)'
+						steps[stepName].files = opts.collection.length
+
+					console.log before + '...\n'
+
+				# end timer and log
+				@[after] = (opts) ->
+					stepName = delta + (opts.renderPass or '')
+					steps[stepName].time = Date.now() - steps[stepName].time
+
+					console.log '\n' + stepName + ' in ' + steps[stepName].time + 'ms (' + (Date.now() - steps.general.time) + 'ms)'
 					# last event
-					displayTotal() if after == 'generateAfter'
+					displayTotal() if stepName == 'generate'
 
 			# recap in a fancy table
 			displayTotal = ->
@@ -49,7 +56,7 @@ module.exports = (BasePlugin) ->
 					head: ['event', 'time (ms)', 'time percentage', 'files', 'time per file (ms)']
 				}
 				for stepName, step of steps
-					if stepName != 'general' and stepName != 'generateAfter'
+					if stepName != 'general' and stepName != 'generate'
 						table.push [
 							stepName
 							step.time
