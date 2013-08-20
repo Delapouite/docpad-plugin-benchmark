@@ -2,49 +2,61 @@ Table = require('cli-table')
 
 module.exports = (BasePlugin) ->
 
-    class BenchmarkPlugin extends BasePlugin
+	class BenchmarkPlugin extends BasePlugin
 
-        name: 'benchmark'
-        constructor: ->
-            timers = {
-                general: Date.now()
-            }
+		name: 'benchmark'
+		config:
+			enabled: true
 
-            # events couples to listen to
-            deltas = [
-                ['generateBefore', 'generateAfter']
-                ['parseBefore', 'parseAfter']
-                ['populateCollectionsBefore', 'populateCollections']
-                ['contextualizeBefore', 'contextualizeAfter']
-                ['renderBefore', 'renderAfter']
-                ['writeBefore', 'writeAfter']
-                ['serverBefore', 'serverAfter']
-            ]
+		constructor: ->
+			steps = {
+				general:
+					time: Date.now()
+			}
 
-            # register the events above
-            deltas.forEach (delta) =>
-                before = delta[0]
-                after = delta[1]
-                # start timer
-                @[before] = ->
-                    console.log before + '...'
-                    timers[after] = Date.now()
-                # end timer
-                @[after] = ->
-                    timers[after] = Date.now() - timers[after]
-                    console.log '\n' + after + ' in ' + timers[after] + 'ms (' + (Date.now() - timers.general) + 'ms)'
-                    # last event
-                    displayTotal() if after == 'generateAfter'
+			# events couples to listen to
+			deltas = [
+				['generateBefore', 'generateAfter']
+				['parseBefore', 'parseAfter']
+				['populateCollectionsBefore', 'populateCollections']
+				['contextualizeBefore', 'contextualizeAfter']
+				['renderBefore', 'renderAfter']
+				['writeBefore', 'writeAfter']
+				['serverBefore', 'serverAfter']
+			]
 
-            # recap in a fancy table
-            displayTotal = ->
-                total = Date.now() - timers.general
-                table = new Table {
-                    head: ['event', 'time in ms', 'percentage']
-                }
-                for timer, ms of timers
-                    if timer != 'general' and timer != 'generateAfter'
-                        table.push [timer,  ms, Math.round(ms * 100 / total) + '%']
-                table.push ['Total', total, '']
-                console.log table.toString()
-            super
+			# register the events above
+			deltas.forEach (delta) =>
+				before = delta[0]
+				after = delta[1]
+				# start timer
+				@[before] = (opts) ->
+					console.log before + '...'
+					steps[after] = time: Date.now()
+					if opts.collection?.length
+						steps[after].files = opts.collection.length
+				# end timer
+				@[after] = ->
+					steps[after].time = Date.now() - steps[after].time
+					console.log '\n' + after + ' in ' + steps[after].time + 'ms (' + (Date.now() - steps.general.time) + 'ms)'
+					# last event
+					displayTotal() if after == 'generateAfter'
+
+			# recap in a fancy table
+			displayTotal = ->
+				total = Date.now() - steps.general.time
+				table = new Table {
+					head: ['event', 'time (ms)', 'time percentage', 'files', 'time per file (ms)']
+				}
+				for stepName, step of steps
+					if stepName != 'general' and stepName != 'generateAfter'
+						table.push [
+							stepName
+							step.time
+							Math.round(step.time * 100 / total) + '%'
+							step.files || ''
+							Math.round(step.time / step.files) || ''
+						]
+				table.push ['Total', total, '', '', '']
+				console.log table.toString()
+			super

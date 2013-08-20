@@ -1,32 +1,32 @@
 {
-    "name": "docpad-plugin-benchmark",
-    "version": "2.1.1",
-    "description": "DocPad plugin that adds the ability to benchmark timings",
-    "homepage": "https://github.com/Delapouite/docpad-plugin-benchmark",
-    "keywords": [
-        "docpad",
-        "docpad-plugin"
-    ],
-    "author": "Delapouite <delapouite@gmail.com> (http://delapouite.com)",
-    "bugs": {
-        "url": "https://github.com/Delapouite/docpad-plugin-benchmark/issues"
-    },
-    "repository" : {
-        "type": "git",
-        "url": "https://github.com/Delapouite/docpad-plugin-benchmark.git"
-    },
-    "engines" : {
-        "node": ">=0.10"
-    },
-    "dependencies": {
-        "cli-table": "0.2.x"
-    },
-    "peerDependencies": {
-        "docpad": ">=6.46 <7"
-    },
-    "devDependencies": {
-        "coffee-script": "~1.6.2",
-        "docpad": ">=6.46 <7"
-    },
-    "main": "./out/benchmark.plugin.js"
+	"name": "docpad-plugin-benchmark",
+	"version": "2.2.0",
+	"description": "DocPad plugin that adds the ability to benchmark timings",
+	"homepage": "https://github.com/Delapouite/docpad-plugin-benchmark",
+	"keywords": [
+		"docpad",
+		"docpad-plugin"
+	],
+	"author": "Delapouite <delapouite@gmail.com> (http://delapouite.com)",
+	"bugs": {
+		"url": "https://github.com/Delapouite/docpad-plugin-benchmark/issues"
+	},
+	"repository" : {
+		"type": "git",
+		"url": "https://github.com/Delapouite/docpad-plugin-benchmark.git"
+	},
+	"engines" : {
+		"node": ">=0.10"
+	},
+	"dependencies": {
+		"cli-table": "0.2.x"
+	},
+	"peerDependencies": {
+		"docpad": ">=6.46 <7"
+	},
+	"devDependencies": {
+		"coffee-script": "~1.6.2",
+		"docpad": ">=6.46 <7"
+	},
+	"main": "./out/benchmark.plugin.js"
 }
